@@ -3,6 +3,7 @@ import SwiftUI
 public struct ContentView: View {
     @StateObject private var settings: SyncSettings
     @StateObject private var viewModel: TodoListViewModel
+    @Environment(\.scenePhase) private var scenePhase
     @State private var newTitle = ""
     @State private var showingSettings = false
 
@@ -45,6 +46,9 @@ public struct ContentView: View {
                 SettingsView(settings: viewModel.settings)
             }
             .onAppear { viewModel.loadAndSync() }
+            .task(id: scenePhase) {
+                if scenePhase == .active { viewModel.sync() }
+            }
         }
         #if os(macOS)
         .frame(minWidth: 360, minHeight: 460)

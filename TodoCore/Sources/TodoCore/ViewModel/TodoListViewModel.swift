@@ -19,6 +19,7 @@ public final class TodoListViewModel: ObservableObject {
     private let local: LocalStore
     private let network: NetworkMonitor
     private var syncTask: Task<Void, Never>?
+    private var periodicSyncCancellable: AnyCancellable?
 
     public var visibleItems: [TodoItem] {
         items.filter { !$0.isDeleted }
@@ -37,6 +38,7 @@ public final class TodoListViewModel: ObservableObject {
         Task {
             items = await local.load()
             sync()
+            startPeriodicSync()
         }
     }
 
@@ -101,6 +103,12 @@ public final class TodoListViewModel: ObservableObject {
                 errorMessage = Self.message(for: error)
             }
         }
+    }
+
+    private func startPeriodicSync() {
+        periodicSyncCancellable = Timer.publish(every: 30, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in self?.sync() }
     }
 
     private func persistAndSync() {
