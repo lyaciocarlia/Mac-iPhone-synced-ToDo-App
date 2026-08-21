@@ -24,14 +24,10 @@ public final class TodoListViewModel: ObservableObject {
         items.filter { !$0.isDeleted }
     }
 
-    public init(
-        settings: SyncSettings = SyncSettings(),
-        local: LocalStore = LocalStore(),
-        network: NetworkMonitor = NetworkMonitor()
-    ) {
+    public init(settings: SyncSettings) {
         self.settings = settings
-        self.local = local
-        self.network = network
+        self.local = LocalStore()
+        self.network = NetworkMonitor()
         network.onBecomeOnline = { [weak self] in
             self?.sync()
         }

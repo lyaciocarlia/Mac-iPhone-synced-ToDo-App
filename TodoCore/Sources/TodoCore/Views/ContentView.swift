@@ -1,11 +1,17 @@
 import SwiftUI
 
 public struct ContentView: View {
-    @StateObject private var viewModel = TodoListViewModel()
+    @StateObject private var settings: SyncSettings
+    @StateObject private var viewModel: TodoListViewModel
     @State private var newTitle = ""
     @State private var showingSettings = false
 
-    public init() {}
+    public init() {
+        let s = SyncSettings()
+        let vm = TodoListViewModel(settings: s)
+        _settings = StateObject(wrappedValue: s)
+        _viewModel = StateObject(wrappedValue: vm)
+    }
 
     public var body: some View {
         NavigationStack {
