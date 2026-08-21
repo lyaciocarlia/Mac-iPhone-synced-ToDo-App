@@ -18,6 +18,7 @@ public final class SyncSettings: ObservableObject {
     }
 
     public init() {
-        self.apiURL = UserDefaults.standard.string(forKey: "todosync.apiURL") ?? ""
+        self.apiURL = UserDefaults.standard.string(forKey: "todosync.apiURL")
+            ?? "https://6a8831437b483fa21fe8bbbe.mockapi.io/todos"
     }
 }
