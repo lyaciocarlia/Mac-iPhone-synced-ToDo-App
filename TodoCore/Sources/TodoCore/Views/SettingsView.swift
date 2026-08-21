@@ -8,17 +8,21 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Bin ID", text: $settings.binId)
+                    TextField("https://…mockapi.io/api/v1/todos", text: $settings.apiURL)
                         #if os(iOS)
                         .textInputAutocapitalization(.never)
+                        .keyboardType(.URL)
                         #endif
                         .autocorrectionDisabled()
-                    SecureField("API Key (X-Master-Key)", text: $settings.apiKey)
-                        .autocorrectionDisabled()
                 } header: {
-                    Text("jsonbin.io Sync")
+                    Text("mockapi.io Sync")
                 } footer: {
-                    Text("Create a free bin at jsonbin.io (start it with an empty array: []), then paste its Bin ID and your X-Master-Key here on every device you want to sync. Both devices must use the same Bin ID and key.")
+                    Text("""
+                        1. Sign up free at mockapi.io and create a project.
+                        2. Add a resource named "todos" with these fields: title (String), isDone (Boolean), isDeleted (Boolean), createdAt (String), updatedAt (String).
+                        3. Paste the full resource URL above (e.g. https://abc123.mockapi.io/api/v1/todos).
+                        4. Enter the same URL on every device to sync them. No login required.
+                        """)
                 }
             }
             .navigationTitle("Sync Settings")
@@ -29,7 +33,7 @@ struct SettingsView: View {
             }
         }
         #if os(macOS)
-        .frame(minWidth: 420, minHeight: 260)
+        .frame(minWidth: 460, minHeight: 300)
         #endif
     }
 }

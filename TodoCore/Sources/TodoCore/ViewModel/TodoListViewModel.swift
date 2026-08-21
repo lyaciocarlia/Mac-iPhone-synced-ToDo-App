@@ -89,11 +89,11 @@ public final class TodoListViewModel: ObservableObject {
         syncTask?.cancel()
         syncTask = Task {
             status = .syncing
-            let engine = SyncEngine(local: local, settings: { [weak self] in self?.settings.credentials })
-            let result = await engine.syncMerging(local: items)
+            let engine = SyncEngine(local: local, apiURL: { [weak self] in self?.settings.apiURL })
+            let result = await engine.sync(localItems: items)
             switch result {
-            case .success(let merged):
-                items = merged
+            case .success(let synced):
+                items = synced
                 status = .idle
                 errorMessage = nil
             case .failure(let error):
@@ -112,13 +112,13 @@ public final class TodoListViewModel: ObservableObject {
     private static func message(for error: SyncError) -> String {
         switch error {
         case .notConfigured:
-            return "Add your jsonbin.io Bin ID and API key in Settings to enable sync."
+            return "Add your mockapi.io resource URL in Settings to enable sync."
         case .server(let code):
             return "Sync failed (server returned \(code))."
         case .decoding:
             return "Sync failed (couldn't read the remote list)."
         case .transport:
-            return "Sync failed (network error). Will retry automatically."
+            return "Sync failed (network error). Will retry when back online."
         }
     }
 }

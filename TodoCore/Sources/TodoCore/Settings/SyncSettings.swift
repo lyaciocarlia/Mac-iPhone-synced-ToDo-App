@@ -1,40 +1,23 @@
 import Combine
 import Foundation
 
-/// User-entered jsonbin.io credentials. The bin ID is stored in
-/// UserDefaults; the API key is stored in the Keychain. Enter the same
-/// values on every device to sync them together.
+/// The mockapi.io resource URL entered by the user. Stored in UserDefaults.
+/// Use the same URL on every device you want to sync.
 @MainActor
 public final class SyncSettings: ObservableObject {
-    @Published public var binId: String {
+    @Published public var apiURL: String {
         didSet {
-            guard binId != oldValue else { return }
-            UserDefaults.standard.set(binId, forKey: Keys.binId)
-        }
-    }
-
-    @Published public var apiKey: String {
-        didSet {
-            guard apiKey != oldValue else { return }
-            KeychainStore.set(apiKey, for: Keys.apiKey)
+            guard apiURL != oldValue else { return }
+            UserDefaults.standard.set(apiURL, forKey: "todosync.apiURL")
         }
     }
 
     public var isConfigured: Bool {
-        !binId.trimmingCharacters(in: .whitespaces).isEmpty && !apiKey.trimmingCharacters(in: .whitespaces).isEmpty
-    }
-
-    public var credentials: SyncCredentials? {
-        isConfigured ? SyncCredentials(binId: binId, apiKey: apiKey) : nil
-    }
-
-    private enum Keys {
-        static let binId = "todosync.binId"
-        static let apiKey = "todosync.apiKey"
+        let trimmed = apiURL.trimmingCharacters(in: .whitespaces)
+        return !trimmed.isEmpty && URL(string: trimmed) != nil
     }
 
     public init() {
-        self.binId = UserDefaults.standard.string(forKey: Keys.binId) ?? ""
-        self.apiKey = KeychainStore.get(Keys.apiKey) ?? ""
+        self.apiURL = UserDefaults.standard.string(forKey: "todosync.apiURL") ?? ""
     }
 }
